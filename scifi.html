@@ -1,0 +1,1271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Action Movies | CineMagic</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: "Segoe UI", Arial, sans-serif;
+      background: linear-gradient(to bottom, #0a0a2a 0%, #1a1a4b 100%);
+      color: #fff;
+      min-height: 100vh;
+      position: relative;
+    }
+
+    /* Film strip effect at bottom */
+    .film-strip {
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+      height: 40px;
+      background: #000;
+      background-image: 
+        repeating-linear-gradient(
+          to right,
+          #000,
+          #000 20px,
+          #333 20px,
+          #333 22px
+        );
+      z-index: -1;
+      display: flex;
+      justify-content: space-between;
+      padding: 0 10px;
+    }
+
+    .film-perf {
+      width: 15px;
+      height: 100%;
+      background: transparent;
+      border-left: 2px dotted #444;
+      border-right: 2px dotted #444;
+    }
+
+    /* Header */
+    header {
+      background: rgba(10, 10, 42, 0.9);
+      color: #d4af37; /* Gold color */
+      padding: 15px 30px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 2px solid #d4af37;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(10px);
+    }
+
+    header .logo {
+      font-size: 1.8rem;
+      font-weight: bold;
+      color: #d4af37;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+  text-shadow: none;
+    }
+
+    header .logo i {
+      font-size: 2rem;
+    }
+
+    header nav ul {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      gap: 25px;
+    }
+
+    header nav ul li a {
+      text-decoration: none;
+      color: #f0e68c; /* Light gold */
+      font-size: 1.1rem;
+      transition: all 0.3s ease;
+      padding: 8px 15px;
+      border-radius: 20px;
+    }
+
+    header nav ul li a:hover,
+    header nav ul li a.active {
+      color: #0a0a2a;
+      background: #d4af37;
+  box-shadow: none;
+    }
+
+    /* Page Banner */
+    .page-banner {
+      position: relative;
+      background: url("picture/scificbackground.jpg") no-repeat center center/cover;
+      height: 40vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+    }
+
+    .page-banner::after {
+      content: "";
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: linear-gradient(to bottom, rgba(10, 10, 42, 0.7), rgba(26, 26, 75, 0.9));
+    }
+
+    .page-banner-content {
+      position: relative;
+      z-index: 2;
+      text-align: center;
+      max-width: 800px;
+      padding: 0 20px;
+    }
+
+    .page-banner h1 {
+      font-size: 3.5rem;
+      color: #3498db;
+      margin-bottom: 20px;
+  text-shadow: none;
+      font-weight: 700;
+    }
+
+    .page-banner p {
+      font-size: 1.3rem;
+      color: #f0e68c;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    /* Breadcrumb */
+    .breadcrumb {
+      padding: 15px 30px;
+      background: rgba(10, 10, 42, 0.7);
+      border-bottom: 1px solid rgba(212, 175, 55, 0.3);
+    }
+
+    .breadcrumb a {
+      color: #d4af37;
+      text-decoration: none;
+    }
+
+    .breadcrumb a:hover {
+      text-decoration: underline;
+    }
+
+    /* Movies Section */
+    .movies {
+      padding: 50px 20px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .section-title {
+      text-align: center;
+      font-size: 2.5rem;
+      margin-bottom: 50px;
+      color: #3498db;
+      position: relative;
+    }
+
+    .section-title::after {
+      content: "";
+      position: absolute;
+      bottom: -15px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100px;
+      height: 3px;
+      background: #3498db;
+      border-radius: 2px;
+    }
+
+    .movies-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 30px;
+    }
+
+    .movie-card {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 15px;
+      overflow: hidden;
+  transition: transform 0.3s ease;
+      backdrop-filter: blur(5px);
+      border: 1px solid rgba(60, 177, 231, 0.548);
+      position: relative;
+    }
+
+    .movie-card:hover {
+      transform: translateY(-10px);
+  box-shadow: none;
+    }
+
+    .movie-poster {
+      height: 360px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .movie-poster img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      transition: transform 0.5s ease;
+    }
+
+    .movie-card:hover .movie-poster img {
+      transform: scale(1.1);
+    }
+
+    .movie-info {
+      padding: 20px;
+    }
+
+    .movie-info h3 {
+      font-size: 1.5rem;
+      margin-bottom: 10px;
+      color: #e74c3c;
+    }
+
+    .movie-info p {
+      color: #f0e68c;
+      line-height: 1.5;
+      font-size: 0.95rem;
+      margin-bottom: 15px;
+    }
+
+    .movie-info .rating {
+      display: flex;
+      align-items: center;
+      color: #d4af37;
+      font-weight: bold;
+    }
+
+    .movie-info .rating i {
+      margin-right: 5px;
+    }
+
+    /* Streaming Info (shown on hover) */
+    .streaming-info {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(10, 10, 42, 0.95);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      padding: 20px;
+      text-align: center;
+    }
+
+    .movie-card:hover .streaming-info {
+      opacity: 1;
+    }
+
+    .streaming-info h4 {
+      color: #e74c3c;
+      margin-bottom: 20px;
+      font-size: 1.3rem;
+    }
+
+    .platforms {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+
+    .platform {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 80px;
+    }
+
+    .platform-icon {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 8px;
+      font-size: 1.5rem;
+    }
+
+    .netflix {
+      background: #e50914;
+      color: white;
+    }
+
+    .disney {
+      background: #113ccf;
+      color: white;
+    }
+
+    .prime {
+      background: #00a8e1;
+      color: white;
+    }
+
+    .hbo {
+      background: #000;
+      color: white;
+    }
+
+    .hulu {
+      background: #1ce783;
+      color: black;
+    }
+
+    .platform-name {
+      font-size: 0.8rem;
+      color: #f0e68c;
+    }
+
+    .view-details {
+      display: inline-block;
+      background: #e74c3c;
+      color: white;
+      padding: 8px 20px;
+      border-radius: 20px;
+      text-decoration: none;
+      font-weight: bold;
+      margin-top: 10px;
+      transition: all 0.3s ease;
+      cursor: pointer;
+      border: none;
+      font-family: inherit;
+    }
+
+    .view-details:hover {
+      background: #c0392b;
+      transform: translateY(-3px);
+    }
+
+    /* Modal Styles */
+    .modal {
+      display: none;
+    }
+    .modal:target {
+      display: block;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.8);
+      z-index: 1000;
+      overflow-y: auto;
+      backdrop-filter: blur(5px);
+    }
+
+    .modal-content {
+      background: linear-gradient(to bottom, #0a0a2a 0%, #1a1a4b 100%);
+      margin: 5% auto;
+      padding: 0;
+      width: 90%;
+      max-width: 600px;
+      border-radius: 15px;
+  box-shadow: none;
+      position: relative;
+      overflow: hidden;
+      border: 2px solid #e74c3c;
+      
+      
+    }
+
+    .close-modal {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      color: #f0e68c;
+      font-size: 28px;
+      font-weight: bold;
+      cursor: pointer;
+  z-index: 10;
+  pointer-events: auto;
+  text-decoration: none;
+      background: rgba(231, 76, 60, 0.8);
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s ease;
+    }
+
+    .close-modal:hover {
+      background: #e74c3c;
+      transform: rotate(90deg);
+    }
+
+    .modal-header {
+      position: relative;
+      height: 300px;
+      overflow: hidden;
+    }
+
+    .modal-header img {
+      max-width: 100%;
+      width: 100%;
+      height: 100%;
+      max-height: 100%;
+      display: block;
+      margin: 0 auto;
+      object-fit: contain;
+    }
+
+    .modal-header::after {
+      content: "";
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 100px;
+      background: linear-gradient(to top, #0a0a2a, transparent);
+    }
+
+    .modal-body {
+      padding: 30px;
+      margin-top: -70px;
+      position: relative;
+      z-index: 2;
+    }
+
+    .modal-title {
+      font-size: 2.2rem;
+      color: #e74c3c;
+      margin-bottom: 10px;
+    }
+
+    .modal-meta {
+      display: flex;
+      gap: 20px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+
+    .modal-meta span {
+      display: flex;
+      align-items: center;
+      color: #d4af37;
+      font-size: 0.9rem;
+    }
+
+    .modal-meta i {
+      margin-right: 5px;
+    }
+
+    .modal-description {
+      color: #f0e68c;
+      line-height: 1.7;
+      margin-bottom: 25px;
+      font-size: 1.1rem;
+    }
+
+    .modal-section {
+      margin-bottom: 25px;
+    }
+
+    .modal-section h3 {
+      color: #e74c3c;
+      margin-bottom: 15px;
+      font-size: 1.4rem;
+      border-bottom: 2px solid #e74c3c;
+      padding-bottom: 5px;
+      display: inline-block;
+    }
+
+    .cast-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+      gap: 15px;
+    }
+
+    .cast-member {
+      text-align: center;
+    }
+
+    .cast-member img {
+      width: 100px;
+      height: 120px;
+      border-radius: 45%;
+      object-fit: cover;
+      margin-bottom: 8px;
+      border: 2px solid #e74c3c;
+    }
+
+    .cast-member p {
+      color: #f0e68c;
+      font-size: 0.9rem;
+    }
+
+    .modal-streaming {
+      background: rgba(255, 255, 255, 0.05);
+      padding: 20px;
+      border-radius: 10px;
+      margin-top: 20px;
+    }
+
+    /* Footer */
+    footer {
+      background: rgba(10, 10, 42, 0.9);
+      text-align: center;
+      padding: 30px;
+      font-size: 1rem;
+      border-top: 2px solid #d4af37;
+      color: #f0e68c;
+      backdrop-filter: blur(10px);
+      margin-top: 50px;
+    }
+
+    .social-links {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      margin: 20px 0;
+    }
+
+    .social-links a {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: #d4af37;
+      color: #0a0a2a;
+      text-decoration: none;
+      transition: all 0.3s ease;
+    }
+
+    .social-links a:hover {
+      transform: translateY(-5px);
+  box-shadow: none;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      header {
+        flex-direction: column;
+        padding: 15px;
+      }
+      
+      header nav ul {
+        margin-top: 15px;
+        gap: 15px;
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+      
+      .page-banner h1 {
+        font-size: 2.5rem;
+      }
+      
+      .page-banner p {
+        font-size: 1.1rem;
+      }
+      
+      .movies-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .platforms {
+        gap: 10px;
+      }
+      
+      .platform {
+        width: 70px;
+      }
+      
+      .modal-content {
+        width: 95%;
+        margin: 10% auto;
+      }
+      
+      .modal-header {
+        height: 200px;
+      }
+      
+      .cast-grid {
+        grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Film strip -->
+  <div class="film-strip">
+    <div class="film-perf"></div>
+    <div class="film-perf"></div>
+    <div class="film-perf"></div>
+    <div class="film-perf"></div>
+    <div class="film-perf"></div>
+  </div>
+
+  <header>
+    <a href="homepage.html" class="logo"><i class="fas fa-film"></i> CineMagic</a>
+    <nav>
+      <ul>
+        <li><a href="homepage.html">Home</a></li>
+        <li><a href="genres.html">Genres</a></li>
+        <li><a href="news.html">News</a></li>
+        <li><a href="cinemas.html">Cinemas</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <div class="breadcrumb">
+    <a href="homepage.html">Home</a> > <a href="genres.html">Genres</a> > Sci-Fi
+  </div>
+
+  <section class="page-banner">
+    <div class="page-banner-content">
+      <h1>Sci-Fi Movies</h1>
+      <p>Journey to other worlds and futures with our science fiction collection featuring advanced technology, space exploration, and futuristic concepts.</p>
+    </div>
+  </section>
+
+  <section class="movies">
+    <h2 class="section-title">Sci-Fi</h2>
+    
+    <div class="movies-grid">
+
+
+      <!-- Movie 1 - The Fantastic Four: First Steps-->
+      <div class="movie-card">
+        <div class="movie-poster">
+          <img src="picture/SCIFIC/The Fantastic Four First Steps/FantasticFour.jpg" alt="fantasticfour">
+        </div>
+        <div class="movie-info">
+          <h3>The Fantastic Four: First Steps</h3>
+          <p>Forced to balance their roles as heroes with the strength of their 
+            family bond, the Fantastic Four must defend Earth from a ravenous 
+            space god called Galactus and his enigmatic herald, the Silver Surfer.</p>
+          <div class="rating">
+            <i class="fas fa-star"></i> 7.3/10
+          </div>
+        </div>
+        <div class="streaming-info">
+          <h4>Available On</h4>
+          <div class="platforms">
+            <div class="platform">
+              <div class="platform-icon prime">
+                <i class="fab fa-amazon"></i>
+              </div>
+              <span class="platform-name">Amazon Prime</span>
+            </div>
+          </div>
+          <a href="#fantasticfour-modal" class="view-details">View Details</a>
+        </div>
+      </div>
+      
+      <!-- Movie 2 -The Moon-->
+      <div class="movie-card">
+        <div class="movie-poster">
+          <img src="picture/SCIFIC/The Moon/themoon.jpg" alt="themoon">
+        </div>
+        <div class="movie-info">
+          <h3>The Moon</h3>
+          <p>A man is left in space due to an unfortunate accident while another man on Earth struggles to bring him back safely.</p>
+          <div class="rating">
+            <i class="fas fa-star"></i> 5.8/10
+          </div>
+        </div>
+        <div class="streaming-info">
+          <h4>Available On</h4>
+          <div class="platforms">
+            <div class="platform">
+              <div class="platform-icon netflix">
+                <i class="fab fa-netflix"></i>
+              </div>
+              <span class="platform-name">Netflix</span>
+            </div>
+             <div class="platform">
+              <div class="platform-icon prime">
+                <i class="fab fa-amazon"></i>
+              </div>
+              <span class="platform-name">Amazon Prime</span>
+            </div>
+          </div>
+          <a href="#themoon-modal" class="view-details">View Details</a>
+        </div>
+      </div>
+
+      <!-- Movie 3 - Jurassic World Rebirth  -->
+      <div class="movie-card">
+        <div class="movie-poster">
+          <img src="picture/SCIFIC/Jurassic World Rebirth/jurassicworld.jpg" alt="jurassicworld">
+        </div>
+        <div class="movie-info">
+          <h3>Jurassic World: Rebirth</h3>
+          <p>Five years post-Jurassic World: Dominion (2022), an expedition braves isolated equatorial 
+            regions to extract DNA from three massive prehistoric creatures for a groundbreaking medical breakthrough.</p>
+          <div class="rating">
+            <i class="fas fa-star"></i> 5.9/10
+          </div>
+        </div>
+        <div class="streaming-info">
+          <h4>Available On</h4>
+          <div class="platforms">
+            <div class="platform">
+              <div class="platform-icon prime">
+                <i class="fab fa-amazon"></i>
+              </div>
+              <span class="platform-name">Amazon Prime</span>
+            </div>
+          </div>
+          <a href="#jurassicworld-modal" class="view-details">View Details</a>
+        </div>
+      </div>
+
+      <!-- Movie 4 - Superman -->
+      <div class="movie-card">
+        <div class="movie-poster">
+          <img src="picture/SCIFIC/Superman/superman.jpg" alt="superman">
+        </div>
+        <div class="movie-info">
+          <h3>Superman</h3>
+          <p>Superman must reconcile his alien Kryptonian heritage with his human upbringing as reporter 
+            Clark Kent. As the embodiment of truth, justice and the human way he soon finds himself in a world that views these as old-fashioned.</p>
+          <div class="rating">
+            <i class="fas fa-star"></i> 7.2/10
+          </div>
+        </div>
+        <div class="streaming-info">
+          <h4>Available On</h4>
+          <div class="platforms">
+            <div class="platform">
+              <div class="platform-icon hbo">
+                <i class="fab fa-hbo"></i>
+              </div>
+              <span class="platform-name">HBO Max</span>
+            </div>
+          </div>
+          <a href="#superman-modal" class="view-details">View Details</a>
+        </div>
+      </div>
+
+
+      <!-- Movie 5 - Avengers: Endgame -->
+      <div class="movie-card">
+        <div class="movie-poster">
+          <img src="picture/SCIFIC/Avengers Endgame/avengersendgamedolbyposter.jpg" alt="avengers">
+        </div>
+        <div class="movie-info">
+          <h3>Avengers: Endgame</h3>
+          <p>After the devastating events of Avengers: Infinity War (2018), the universe is in ruins. 
+            With the help of remaining allies, the Avengers assemble once more in order to reverse Thanos' 
+            actions and restore balance to the universe.</p>
+          <div class="rating">
+            <i class="fas fa-star"></i> 8.4/10
+          </div>
+        </div>
+        <div class="streaming-info">
+          <h4>Available On</h4>
+          <div class="platforms">
+            <div class="platform">
+              <div class="platform-icon disney">
+                <i class="fab fa-disney"></i>
+              </div>
+              <span class="platform-name">Disney+</span>
+            </div>
+          </div>
+          <a href="#avengers-modal" class="view-details">View Details</a>
+        </div>
+      </div>
+
+      <!-- Movie 6 -Big Hero 6 -->
+      <div class="movie-card">
+        <div class="movie-poster">
+          <img src="picture/SCIFIC/Big Hero/bighero6.jpg" alt="bighero">
+        </div>
+        <div class="movie-info">
+          <h3>Big Hero 6</h3>
+          <p>A special bond develops between plus-sized inflatable robot Baymax 
+            and prodigy Hiro Hamada, who together team up with a group of friends to form a band of high-tech heroes.</p>
+          <div class="rating">
+            <i class="fas fa-star"></i> 7.8/10
+          </div>
+        </div>
+        <div class="streaming-info">
+          <h4>Available On</h4>
+          <div class="platforms">
+            <div class="platform">
+              <div class="platform-icon disney">
+                <i class="fab fa-disney"></i>
+              </div>
+              <span class="platform-name">Disney+</span>
+            </div>
+          </div>
+          <a href="#bighero-modal" class="view-details">View Details</a>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Movie Detail Modals -->
+
+  <!--The Fantastic Four: First Steps MOVIE -->
+  <div id="fantasticfour-modal" class="modal">
+    <div class="modal-content">
+  <a href="#" class="close-modal" aria-label="Close">&times;</a>
+      <div class="modal-header">
+        <img src="picture/SCIFIC/The Fantastic Four First Steps/landscape.jpg" alt="fantasticfour">
+      </div>
+      <div class="modal-body">
+        <h2 class="modal-title">The Fantastic Four: First Steps</h2>
+        <div class="modal-meta">
+          <span><i class="fas fa-clock"></i> 1h 54m</span>
+          <span><i class="fas fa-star"></i> 7.3/10</span>
+          <span><i class="fas fa-calendar-alt"></i> 2023</span>
+          <span><i class="fas fa-ticket-alt"></i> Sci-Fi/Adventure</span>
+        </div>
+        <p class="modal-description">
+        The Fantastic Four: First Steps is a 2025 American superhero film based 
+        on the Marvel Comics superhero team the Fantastic Four. Produced by Marvel 
+        Studios and distributed by Walt Disney Studios Motion Pictures, it is the 37th 
+        film in the Marvel Cinematic Universe (MCU) and the second reboot of the Fantastic Four 
+        film series. The film was directed by Matt Shakman from a screenplay by Josh Friedman, 
+        Eric Pearson, and the team of Jeff Kaplan and Ian Springer. It features an ensemble cast 
+        including Pedro Pascal, Vanessa Kirby, Ebon Moss-Bachrach, and Joseph Quinn as the titular team, 
+        alongside Julia Garner, Sarah Niles, Mark Gatiss, Natasha Lyonne, Paul Walter Hauser, and Ralph Ineson. 
+        The film is set in the 1960s of a retro-futuristic world which the Fantastic Four must protect from the
+        planet-devouring cosmic being Galactus (Ineson).
+        </p>
+        
+        <div class="modal-section">
+          <h3>Cast</h3>
+          <div class="cast-grid">
+            <div class="cast-member">
+              <img src="picture/SCIFIC/The Fantastic Four First Steps/Pedro Pascal.jpg" alt="Actor 1">
+              <p>Pedro Pascal</p>
+            </div>
+            <div class="cast-member">
+              <img src="picture/SCIFIC/The Fantastic Four First Steps/Vanessa Kirby.jpg" alt="Actor 2">
+              <p>Vanessa Kirby</p>
+            </div>
+            <div class="cast-member">
+              <img src="picture/SCIFIC/The Fantastic Four First Steps/Ebon Moss-Bachrach.jpg" alt="Actor 3">
+              <p>Ebon Moss-Bachrach</p>
+            </div>
+            <div class="cast-member">
+              <img src="picture/SCIFIC/The Fantastic Four First Steps/Joseph Quinn.jpg" alt="Actor 4">
+              <p>Joseph Quinn</p>
+          </div>
+        </div>
+        </div>
+        
+        <div class="modal-section">
+          <h3>Director</h3>
+          <p>Matt Shakman</p>
+        </div>
+        
+        <div class="modal-section">
+          <h3>Where to Watch</h3>
+          <div class="modal-streaming">
+            <div class="platforms">
+              <div class="platform">
+                <div class="platform-icon prime">
+                  <i class="fab fa-amazon"></i>
+                </div>
+                <span class="platform-name">Prime</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- The Moon MOVIE -->
+  <div id="themoon-modal" class="modal">
+  <div class="modal-content">
+  <a href="#" class="close-modal" aria-label="Close">&times;</a>
+    <div class="modal-header">
+      <img src="picture/SCIFIC/The Moon/landscape.jpg" alt="themoon">
+    </div>
+    <div class="modal-body">
+      <h2 class="modal-title">The Moon</h2>
+      <div class="modal-meta">
+        <span><i class="fas fa-clock"></i> 2h 9m</span>
+        <span><i class="fas fa-star"></i> 5.8/10</span>
+        <span><i class="fas fa-calendar-alt"></i> 2023</span>
+        <span><i class="fas fa-ticket-alt"></i>Sci-Fi </span>
+      </div>
+      <p class="modal-description">
+        The Moon (Korean: 더 문; RR: Deo mun) is a 2023 South Korean science fiction 
+        film written, co-produced and directed by Kim Yong-hwa, starring Sul Kyung-gu, 
+        Doh Kyung-soo, and Kim Hee-ae. It follows the dramatic story of South Korea's first crewed 
+        lunar exploration mission and isolation in space. The film was released theatrically on August 2, 2023.
+        It is also available for streaming on Viu in selected regions.
+      </p>
+      
+      <div class="modal-section">
+        <h3>Cast</h3>
+        <div class="cast-grid">
+          <div class="cast-member">
+            <img src="picture/SCIFIC/The Moon/Do Kyung-soo.jpg" alt="Actor 1">
+            <p>Do Kyung-soo</p>
+          </div>
+          <div class="cast-member">
+            <img src="picture/SCIFIC/The Moon/Jo Han-chul.jpg" alt="Actor 2">
+            <p>Jo Han-chul</p>
+          </div>
+          <div class="cast-member">
+            <img src="picture/SCIFIC/The Moon/Kim Hee-ae.jpg" alt="Actor 3">
+            <p>Kim Hee-ae</p>
+          </div>
+
+          <div class="cast-member">
+            <img src="picture/SCIFIC/The Moon/Sul Kyung-gu.jpg" alt="Actor 4">
+            <p>Sul Kyung-gu</p>
+          </div>
+        </div>
+      </div>
+      
+      <div class="modal-section">
+        <h3>Director</h3>
+        <p>Kim Yong-hwa</p>
+      </div>
+      
+      <div class="modal-section">
+        <h3>Where to Watch</h3>
+        <div class="modal-streaming">
+          <div class="platforms">
+            <div class="platform">
+              <div class="platform-icon netflix">
+                <i class="fab fa-netflix"></i>
+              </div>
+              <span class="platform-name">Netflix</span>
+            </div>
+            <div class="platform">
+              <div class="platform-icon prime">
+                <i class="fab fa-amazon"></i>
+              </div>
+              <span class="platform-name">Amazon Prime</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+  <!-- Jurassic World Rebirth  MOVIE -->
+  <div id="jurassicworld-modal" class="modal">
+    <div class="modal-content">
+  <a href="#" class="close-modal" aria-label="Close">&times;</a>
+      <div class="modal-header">
+        <img src="picture/SCIFIC/Jurassic World Rebirth/landscape.jpg" alt="jurassicworld">
+      </div>
+      <div class="modal-body">
+        <h2 class="modal-title">Jurassic World: Rebirth</h2>
+        <div class="modal-meta">
+          <span><i class="fas fa-clock"></i>  2h 49m</span>
+          <span><i class="fas fa-star"></i> 7.6/10</span>
+          <span><i class="fas fa-calendar-alt"></i> 2023</span>
+          <span><i class="fas fa-ticket-alt"></i>/sci-fi/Crime/Thriller</span>
+        </div>
+        <p class="modal-description">
+          Condemned by the tyrannical High Table to be on the run for the rest of his life, deadly assassin maestro John Wick (2014) 
+          embarks on a Sisyphean mission of suicidal fury to decide his fate after the merciless carnage 
+          in John Wick: Chapter 3 - Parabellum (2019). At last, John's violent journey, fuelled by vengeance and grief, 
+          ultimately leads him to a fateful confrontation with his former employers, the crime masters that forced him into exile. 
+          And as the blood-stained vendetta to destroy those who pull the strings continues, old companions face the brutal consequences 
+          of friendship, and all-powerful, well-connected adversaries emerge to bring Wick's head on a platter. But talk is cheap--now guns 
+          have the final say. Baba Yaga, the grim messiah of death, must make every bullet count in this bloody, once-and-for-all struggle 
+          for freedom.
+        </p>
+        
+        <div class="modal-section">
+          <h3>Cast</h3>
+          <div class="cast-grid">
+            <div class="cast-member">
+              <img src="picture/SCIFIC/Jurassic World Rebirth/Jonathan Bailey.jpg" alt="Actor 1">
+              <p>Jonathan Bailey</p>
+            </div>
+            <div class="cast-member">
+              <img src="picture/SCIFIC/Jurassic World Rebirth/Mahershala Ali.jpg" alt="Actor 2">
+              <p>Mahershala Ali.</p>
+            </div>
+            <div class="cast-member">
+              <img src="picture/SCIFIC/Jurassic World Rebirth/Scarlett Johansson.jpg" alt="Actor 3">
+              <p>Scarlett Johansson</p>
+            </div>
+          </div>
+        </div>
+        
+        <div class="modal-section">
+          <h3>Director</h3>
+          <p>Chad Stahelski</p>
+        </div>
+        <div class="modal-section">
+          <h3>Where to Watch</h3>
+          <div class="modal-streaming">
+            <div class="platforms">
+              <div class="platform">
+                <div class="platform-icon netflix">
+                  <i class="fab fa-netflix"></i>
+                </div>
+                <span class="platform-name">Netflix</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Superman MOVIE -->
+  <div id="superman-modal" class="modal">
+    <div class="modal-content">
+    <a href="#" class="close-modal" aria-label="Close">&times;</a>
+      <div class="modal-header">
+        <img src="picture/SCIFIC/Superman/superman-capa-scaled.jpg" alt="superman">
+      </div>
+      <div class="modal-body">
+        <h2 class="modal-title">Superman</h2>
+        <div class="modal-meta">
+          <span><i class="fas fa-clock"></i> 2h 9m</span>
+          <span><i class="fas fa-star"></i> 7.2/10</span>
+          <span><i class="fas fa-calendar-alt"></i> 2025</span>
+          <span><i class="fas fa-ticket-alt"></i> Sci-Fi</span>
+        </div>
+        <p class="modal-description">
+         An alien named Kal-El from the destroyed planet Krypton. He was sent to Earth and raised 
+         as Clark Kent by human foster parents, Martha and Jonathan Kent. As an adult, Superman became 
+         the protector of Earth, working at the Daily Planet as Clark Kent alongside his partner and wife 
+         Lois Lane.
+        </p>
+        
+        <div class="modal-section">
+          <h3>Cast</h3>
+          <div class="cast-grid">
+            <div class="cast-member">
+              <img src="picture/SCIFIC/Superman/David Corenswet.jpg" alt="Actor 1">
+              <p>David Corenswet</p>
+            </div>
+            <div class="cast-member">
+              <img src="picture/SCIFIC/Superman/Nicholas Hoult.jpg" alt="Actor 2">
+              <p>Nicholas Hoult</p>
+            </div>
+            <div class="cast-member">
+              <img src="picture/SCIFIC/Superman/Rachel Brosnahan.jpg" alt="Actor 3">
+              <p>Rachel Brosnahan</p>
+            </div>
+          </div>
+        </div>
+        
+        <div class="modal-section">
+          <h3>Director</h3>
+          <p>James Gunn</p>
+        </div>
+        
+        <div class="modal-section">
+          <h3>Where to Watch</h3>
+          <div class="modal-streaming">
+            <div class="platforms">
+              <div class="platform">
+                <div class="platform-icon hbo">
+                  <i class="fab fa-hbo"></i>
+                </div>
+                <span class="platform-name">HBO Max</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Avengers: Endgame MOVIE -->
+  <div id="avengers-modal" class="modal">
+    <div class="modal-content">
+  <a href="#" class="close-modal" aria-label="Close">&times;</a>
+      <div class="modal-header">
+        <img src="picture/SCIFIC/Avengers Endgame/landscape.jpg" alt="avengers">
+      </div>
+      <div class="modal-body">
+        <h2 class="modal-title">Avengers: Endgame</h2>
+        <div class="modal-meta">
+          <span><i class="fas fa-clock"></i> 3h 1m</span>
+          <span><i class="fas fa-star"></i> 8.4/10</span>
+          <span><i class="fas fa-calendar-alt"></i> 2019</span>
+          <span><i class="fas fa-ticket-alt"></i> Sci-Fi</span>
+        </div>
+        <p class="modal-description">
+          Stark, Rogers and Thor confront Thanos on the ground, who intends to rebuild the 
+          entire universe using the Stones, a universe where the new living beings 
+          will live in peace without knowledge of the past. After Stark and Thor are 
+          overpowered in the ensuing fight, Rogers wields Mjølnir against the time-displaced 
+          Titan.
+        </p>
+        
+        <div class="modal-section">
+          <h3>Cast</h3>
+          <div class="cast-grid">
+            <div class="cast-member">
+              <img src="picture/SCIFIC/Avengers Endgame/Benedict Cumberbatch.jpg" alt="Actor 1">
+              <p>Benedict Cumberbatch</p>
+            </div>
+            <div class="cast-member">
+              <img src="picture/SCIFIC/Avengers Endgame/Brie Larson.jpg" alt="Actor 2">
+              <p>Brie Larson</p>
+            </div>
+            <div class="cast-member">
+              <img src="picture/SCIFIC/Avengers Endgame/Chadwick Boseman.jpg" alt="Actor 4">
+              <p>Chadwick Boseman</p>
+            </div>
+            <div class="cast-member">
+              <img src="picture/SCIFIC/Avengers Endgame/Chris Evans.jpg" alt="Actor 5">
+              <p>Chris Evans</p>
+            </div>
+            <div class="cast-member">
+              <img src="picture/SCIFIC/Avengers Endgame/Chris Hemsworth.jpg" alt="Actor 6">
+              <p>Chris Hemsworth</p>
+            </div>
+            <div class="cast-member">
+              <img src="picture/SCIFIC/Avengers Endgame/Don Cheadle.jpg" alt="Actor 7">
+              <p>Don Cheadle</p>
+            </div>
+            <div class="cast-member">
+              <img src="picture/SCIFIC/Avengers Endgame/Jeremy Renner.jpg" alt="Actor 8">
+              <p>Jeremy Renner</p>
+            </div>
+            <div class="cast-member">
+              <img src="picture/SCIFIC/Avengers Endgame/Mark Ruffalo.jpg" alt="Actor 9">
+              <p>Mark Ruffalo</p>
+            </div>
+            <div class="cast-member">
+              <img src="picture/SCIFIC/Avengers Endgame/Paul Rudd.jpg" alt="Actor 10">
+              <p>Paul Rudd</p>
+            </div>
+            <div class="cast-member">
+              <img src="picture/SCIFIC/Avengers Endgame/Robert Downey Jr..jpg" alt="Actor 11">
+              <p>Robert Downey Jr</p>
+            </div>
+            <div class="cast-member">
+              <img src="picture/SCIFIC/Avengers Endgame/Scarlett Johansson.jpg" alt="Actor 11">
+              <p>Scarlett Johansson</p>
+            </div>
+            <div class="cast-member">
+              <img src="picture/SCIFIC/Avengers Endgame/Tom Holland.jpg" alt="Actor 11">
+              <p>Tom Holland</p>
+            </div>
+          </div>
+        </div>
+        <div class="modal-section">
+          <h3>Director</h3>
+          <p>Anthony Russo & Joe Russo</p>
+        </div>
+        <div class="modal-section">
+          <h3>Where to Watch</h3>
+          <div class="modal-streaming">
+            <div class="platforms">
+              <div class="platform">
+                <div class="platform-icon disney">
+                  <i class="fab fa-disney"></i>
+                </div>
+                <span class="platform-name">Disney+</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Big Hero MOVIE -->
+  <div id="bighero-modal" class="modal">
+    <div class="modal-content">
+  <a href="#" class="close-modal" aria-label="Close">&times;</a>
+      <div class="modal-header">
+        <img src="picture/SCIFIC/Big Hero/landscape.png" alt="bighero">
+      </div>
+      <div class="modal-body">
+        <h2 class="modal-title">Big Hero 6</h2>
+        <div class="modal-meta">
+          <span><i class="fas fa-clock"></i> 1h 42m</span>
+          <span><i class="fas fa-star"></i> 7.8/10</span>
+          <span><i class="fas fa-calendar-alt"></i> 2014</span>
+          <span><i class="fas fa-ticket-alt"></i> Sci-Fi</span>
+        </div>
+        <p class="modal-description">
+          Is a Disney animated action-adventure and science-fiction film inspired by the Marvel comic of the same name. 
+          The story follows Hiro Hamada, a 14-year-old robotics prodigy living in the futuristic city of San Fransokyo. 
+          After a tragic event involving his brother Tadashi, Hiro forms a bond with Baymax, a lovable inflatable healthcare 
+          robot created by Tadashi.
+        </p>
+        
+        <div class="modal-section">
+          <h3>Cast</h3>
+          <div class="cast-grid">
+            <div class="cast-member">
+              <img src="picture/SCIFIC/Big Hero/baymaxvoice-Scott Adsit.jpg" alt="Actor 1">
+              <p>Scott Adsit<br>Baymax Voice</p>
+            </div>
+            <div class="cast-member">
+              <img src="picture/SCIFIC/Big Hero/hirovoice-Ryan Potter.jpg" alt="Actor 2">
+              <p>Ryan Potter<br> Hiro Voice</p>
+            </div>
+            <div class="cast-member">
+              <img src="picture/SCIFIC/Big Hero/tadashivoice-Daniel Henney.jpg" alt="Actor 3">
+              <p>Daniel Henney<br>Tadashi Voice</p>
+            </div>
+          </div>
+        </div>
+        
+        <div class="modal-section">
+          <h3>Director</h3>
+          <p>Don Hall & Chris Williams</p>
+        </div>
+        
+        <div class="modal-section">
+          <h3>Where to Watch</h3>
+          <div class="modal-streaming">
+            <div class="platforms">
+              <div class="platform">
+                <div class="platform-icon disney">
+                  <i class="fab fa-disney"></i>
+                </div>
+                <span class="platform-name">Disney+</span>
+              </div>
+               
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <div class="social-links">
+      <a href="#"><i class="fab fa-facebook-f"></i></a>
+      <a href="#"><i class="fab fa-twitter"></i></a>
+      <a href="#"><i class="fab fa-instagram"></i></a>
+      <a href="#"><i class="fab fa-youtube"></i></a>
+    </div>
+    <p>&copy; 2025 CineMagic. All Rights Reserved.</p>
+  </footer>
+
+
+</body>
+</html>

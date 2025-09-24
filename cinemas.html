@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CineMagic | Famous Cinemas</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: "Segoe UI", Arial, sans-serif;
+      background: linear-gradient(to bottom, #0a0a2a 0%, #1a1a4b 100%);
+      color: #fff;
+      min-height: 100vh;
+      position: relative;
+    }
+
+    /* Film strip effect at bottom */
+    .film-strip {
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+      height: 40px;
+      background: #000;
+      background-image: 
+        repeating-linear-gradient(
+          to right,
+          #000,
+          #000 20px,
+          #333 20px,
+          #333 22px
+        );
+      z-index: -1;
+      display: flex;
+      justify-content: space-between;
+      padding: 0 10px;
+    }
+
+    .film-perf {
+      width: 15px;
+      height: 100%;
+      background: transparent;
+      border-left: 2px dotted #444;
+      border-right: 2px dotted #444;
+    }
+
+    /* Header */
+    header {
+      background: rgba(10, 10, 42, 0.9);
+      color: #d4af37; /* Gold color */
+      padding: 15px 30px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 2px solid #d4af37;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(10px);
+    }
+
+    header .logo {
+      font-size: 1.8rem;
+      font-weight: bold;
+      color: #d4af37;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-shadow: 0 0 10px rgba(212, 175, 55, 0.5);
+    }
+
+    header .logo i {
+      font-size: 2rem;
+    }
+
+    header nav ul {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      gap: 25px;
+    }
+
+    header nav ul li a {
+      text-decoration: none;
+      color: #f0e68c; /* Light gold */
+      font-size: 1.1rem;
+      transition: all 0.3s ease;
+      padding: 8px 15px;
+      border-radius: 20px;
+    }
+
+    header nav ul li a:hover,
+    header nav ul li a.active {
+      color: #0a0a2a;
+      background: #d4af37;
+      box-shadow: 0 0 15px rgba(212, 175, 55, 0.7);
+    }
+
+    /* Page Banner */
+    .page-banner {
+      position: relative;
+      background: url("https://images.unsplash.com/photo-1485951237318-9ea5e175b891?auto=format&fit=crop&w=1600&q=80") no-repeat center center/cover;
+      height: 40vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+    }
+
+    .page-banner::after {
+      content: "";
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: linear-gradient(to bottom, rgba(10, 10, 42, 0.7), rgba(26, 26, 75, 0.9));
+    }
+
+    .page-banner-content {
+      position: relative;
+      z-index: 2;
+      text-align: center;
+      max-width: 800px;
+      padding: 0 20px;
+    }
+
+    .page-banner h1 {
+      font-size: 3.5rem;
+      color: #d4af37;
+      margin-bottom: 20px;
+      text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+      font-weight: 700;
+    }
+
+    .page-banner p {
+      font-size: 1.3rem;
+      color: #f0e68c;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    /* Breadcrumb */
+    .breadcrumb {
+      padding: 15px 30px;
+      background: rgba(10, 10, 42, 0.7);
+      border-bottom: 1px solid rgba(212, 175, 55, 0.3);
+    }
+
+    .breadcrumb a {
+      color: #d4af37;
+      text-decoration: none;
+    }
+
+    .breadcrumb a:hover {
+      text-decoration: underline;
+    }
+
+    /* Cinemas Section */
+    .cinemas {
+      padding: 50px 20px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .section-title {
+      text-align: center;
+      font-size: 2.5rem;
+      margin-bottom: 50px;
+      color: #d4af37;
+      position: relative;
+    }
+
+    .section-title::after {
+      content: "";
+      position: absolute;
+      bottom: -15px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100px;
+      height: 3px;
+      background: #d4af37;
+      border-radius: 2px;
+    }
+
+    .cinemas-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+      gap: 40px;
+    }
+
+    .cinema-card {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 15px;
+      overflow: hidden;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      backdrop-filter: blur(5px);
+      border: 1px solid rgba(212, 175, 55, 0.3);
+    }
+
+    .cinema-card:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+    }
+
+    .cinema-image {
+      height: 250px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .cinema-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.5s ease;
+    }
+
+    .cinema-card:hover .cinema-image img {
+      transform: scale(1.1);
+    }
+
+    .cinema-content {
+      padding: 25px;
+    }
+
+    .cinema-name {
+      font-size: 1.8rem;
+      margin-bottom: 10px;
+      color: #d4af37;
+      display: flex;
+      align-items: center;
+    }
+
+    .cinema-name i {
+      margin-right: 10px;
+    }
+
+    .cinema-location {
+      color: #f0e68c;
+      font-size: 1.1rem;
+      margin-bottom: 15px;
+      display: flex;
+      align-items: center;
+    }
+
+    .cinema-location i {
+      margin-right: 8px;
+      color: #3498db;
+    }
+
+    .cinema-fact {
+      background: rgba(212, 175, 55, 0.1);
+      border-left: 4px solid #d4af37;
+      padding: 15px;
+      border-radius: 0 8px 8px 0;
+      margin-bottom: 20px;
+    }
+
+    .cinema-fact h4 {
+      color: #d4af37;
+      margin-bottom: 8px;
+      font-size: 1.1rem;
+    }
+
+    .cinema-fact p {
+      color: #f0e68c;
+      line-height: 1.5;
+      font-size: 0.95rem;
+    }
+
+    .cinema-details {
+      color: #f0e68c;
+      line-height: 1.6;
+      margin-bottom: 20px;
+    }
+
+    .cinema-features {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 15px;
+    }
+
+    .feature {
+      background: rgba(52, 152, 219, 0.2);
+      color: #3498db;
+      padding: 5px 10px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+    }
+
+    /* Country Flags */
+    .country-flag {
+      display: inline-block;
+      width: 24px;
+      height: 16px;
+      margin-right: 8px;
+      vertical-align: middle;
+      border: 1px solid rgba(255,255,255,0.3);
+    }
+
+    /* Philippines Flag */
+    .ph-flag {
+      position: relative;
+      background: linear-gradient(to bottom, #0038a8 0 50%, #ce1126 50% 100%);
+      overflow: hidden;
+    }
+    .ph-flag::before {
+      /* White triangle */
+      content: "";
+      position: absolute;
+      left: 0; top: 0;
+      width: 0; height: 0;
+      border-top: 8px solid transparent;
+      border-bottom: 8px solid transparent;
+      border-left: 14px solid #fff;
+      z-index: 2;
+    }
+    .ph-flag .ph-sun {
+      position: absolute;
+      left: 3px;
+      top: 6px;
+      width: 6px;
+      height: 6px;
+      background: #ffd600;
+      border-radius: 50%;
+      z-index: 3;
+      box-shadow: 0 0 2px 1px #ffd600;
+    }
+    .ph-flag .ph-star {
+      position: absolute;
+      color: #ffd600;
+      font-size: 6px;
+      z-index: 3;
+    }
+    .ph-flag .ph-star1 { left: 1px; top: 1px; }
+    .ph-flag .ph-star2 { left: 8px; top: 1px; }
+    .ph-flag .ph-star3 { left: 4.5px; top: 13px; }
+
+    /* South Korea Flag */
+    .kr-flag {
+      background: #fff;
+      position: relative;
+    }
+    .kr-flag::before {
+      content: "";
+      position: absolute;
+      left: 8px; top: 4px;
+      width: 8px; height: 8px;
+      background: #cd2e3a;
+      border-radius: 50%;
+      z-index: 2;
+    }
+    .kr-flag::after {
+      content: "";
+      position: absolute;
+      left: 12px; top: 8px;
+      width: 4px; height: 4px;
+      background: #0047a0;
+      border-radius: 50%;
+      z-index: 3;
+    }
+
+    /* United States Flag */
+    .us-flag {
+      background: repeating-linear-gradient(to bottom, #b22234 0 2px, #fff 2px 4px);
+      position: relative;
+    }
+    .us-flag::before {
+      content: "";
+      position: absolute;
+      top: 0; left: 0;
+      width: 10px; height: 9px;
+      background: #3c3b6e;
+      z-index: 2;
+      border-top-left-radius: 2px;
+    }
+    .us-flag::after {
+      content: "";
+      position: absolute;
+      left: 2px; top: 2px;
+      width: 6px; height: 5px;
+      background: repeating-linear-gradient(90deg, #fff 0 1px, transparent 1px 2px);
+      z-index: 3;
+    }
+
+    /* Japan Flag */
+    .jp-flag {
+      background: #fff;
+      position: relative;
+    }
+    .jp-flag::before {
+      content: "";
+      position: absolute;
+      left: 6px; top: 2px;
+      width: 12px; height: 12px;
+      background: #bc002d;
+      border-radius: 50%;
+      z-index: 2;
+    }
+
+    /* Map Section */
+    .map-section {
+      margin-top: 80px;
+      text-align: center;
+    }
+
+    .map-placeholder {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 15px;
+      padding: 40px;
+      margin-top: 30px;
+      border: 1px solid rgba(212, 175, 55, 0.3);
+    }
+
+    .map-placeholder i {
+      font-size: 4rem;
+      color: #d4af37;
+      margin-bottom: 20px;
+    }
+
+    .map-placeholder h3 {
+      color: #d4af37;
+      margin-bottom: 15px;
+    }
+
+    .map-placeholder p {
+      color: #f0e68c;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    /* Footer */
+    footer {
+      background: rgba(10, 10, 42, 0.9);
+      text-align: center;
+      padding: 30px;
+      font-size: 1rem;
+      border-top: 2px solid #d4af37;
+      color: #f0e68c;
+      backdrop-filter: blur(10px);
+      margin-top: 50px;
+    }
+
+    .social-links {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      margin: 20px 0;
+    }
+
+    .social-links a {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: #d4af37;
+      color: #0a0a2a;
+      text-decoration: none;
+      transition: all 0.3s ease;
+    }
+
+    .social-links a:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 5px 15px rgba(212, 175, 55, 0.5);
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      header {
+        flex-direction: column;
+        padding: 15px;
+      }
+      
+      header nav ul {
+        margin-top: 15px;
+        gap: 15px;
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+      
+      .page-banner h1 {
+        font-size: 2.5rem;
+      }
+      
+      .page-banner p {
+        font-size: 1.1rem;
+      }
+      
+      .cinemas-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .cinema-name {
+        font-size: 1.5rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Film strip -->
+  <div class="film-strip">
+    <div class="film-perf"></div>
+    <div class="film-perf"></div>
+    <div class="film-perf"></div>
+    <div class="film-perf"></div>
+    <div class="film-perf"></div>
+  </div>
+
+  <header>
+    <a href="homepage.html" class="logo"><i class="fas fa-film"></i> CineMagic</a>
+    <nav>
+      <ul>
+        <li><a href="homepage.html">Home</a></li>
+        <li><a href="genres.html">Genres</a></li>
+        <li><a href="news.html">News</a></li>
+        <li><a href="cinemas.html" class="active">Cinemas</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <div class="breadcrumb">
+    <a href="homepage.html">Home</a> > Famous Cinemas
+  </div>
+
+  <section class="page-banner">
+    <div class="page-banner-content">
+      <h1>Famous Cinemas</h1>
+      <p>Discover iconic movie theaters in the Philippines, Korea, America, and Japan</p>
+    </div>
+  </section>
+
+  <section class="cinemas">
+    <h2 class="section-title">Iconic Cinemas Around the World</h2>
+    
+    <div class="cinemas-grid">
+      <!-- Philippines Cinema -->
+      <div class="cinema-card">
+        <div class="cinema-image">
+          <img src="picture/SM-Cinema-Logo-1-1024x1024.jpg" alt="SM Cinema">
+        </div>
+        <div class="cinema-content">
+          <h3 class="cinema-name"><i class="fas fa-shopping-cart"></i> SM Cinema</h3>
+          <p class="cinema-location"><i class="fas fa-map-marker-alt"></i> 
+            <span class="country-flag ph-flag">
+              <span class="ph-sun"></span>
+              <span class="ph-star ph-star1">★</span>
+              <span class="ph-star ph-star2">★</span>
+              <span class="ph-star ph-star3">★</span>
+            </span> Manila, Philippines</p>
+          
+          <div class="cinema-fact">
+            <h4>Why It's Famous</h4>
+            <p>Largest cinema chain in the Philippines with over 300 branches nationwide, known for its IMAX and Director's Club premium experiences.</p>
+          </div>
+          
+          <p class="cinema-details">SM Cinema revolutionized movie-going in the Philippines by integrating theaters within shopping malls. Their premium offerings like IMAX and Director's Club with recliner seats have set new standards for comfort and viewing experience in the country.</p>
+          
+          <div class="cinema-features">
+            <span class="feature">IMAX Theaters</span>
+            <span class="feature">Director's Club</span>
+            <span class="feature">Nationwide Chain</span>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Korea Cinema -->
+      <div class="cinema-card">
+        <div class="cinema-image">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/7/7e/CGV_Cheongdam_Cinema_Entrance.jpg" alt="CGV Cinemas">
+        </div>
+        <div class="cinema-content">
+          <h3 class="cinema-name"><i class="fas fa-film"></i> CGV Cinemas</h3>
+          <p class="cinema-location"><i class="fas fa-map-marker-alt"></i> <span class="country-flag kr-flag"></span> Seoul, South Korea</p>
+          
+          <div class="cinema-fact">
+            <h4>Fun Fact</h4>
+            <p>Largest multiplex chain in South Korea, famous for its 4DX technology that adds motion, wind, and scent effects to movies.</p>
+          </div>
+          
+          <p class="cinema-details">CGV is Korea's leading cinema chain with innovative viewing experiences like 4DX, ScreenX (270-degree viewing), and private screening rooms. They're known for their high-tech approach to cinema and premium services that enhance the movie-watching experience.</p>
+          
+          <div class="cinema-features">
+            <span class="feature">4DX Technology</span>
+            <span class="feature">ScreenX</span>
+            <span class="feature">Premium Services</span>
+          </div>
+        </div>
+      </div>
+      
+      <!-- America Cinema -->
+      <div class="cinema-card">
+        <div class="cinema-image">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/6/6e/TCL_Chinese_Theatre_%28Hollywood%2C_Los_Angeles%29.jpg" alt="TCL Chinese Theatre">
+        </div>
+        <div class="cinema-content">
+          <h3 class="cinema-name"><i class="fas fa-landmark"></i> TCL Chinese Theatre</h3>
+          <p class="cinema-location"><i class="fas fa-map-marker-alt"></i> <span class="country-flag us-flag"></span> Hollywood, USA</p>
+          
+          <div class="cinema-fact">
+            <h4>Why It's Famous</h4>
+            <p>Home to the most famous concrete forecourt in the world, featuring handprints and footprints of Hollywood legends since 1927.</p>
+          </div>
+          
+          <p class="cinema-details">This historic cinema opened in 1927 and has been the site of numerous movie premieres, including the first Star Wars film. Its iconic Chinese-inspired architecture makes it one of the most photographed landmarks in Hollywood, attracting millions of visitors annually.</p>
+          
+          <div class="cinema-features">
+            <span class="feature">Historic</span>
+            <span class="feature">Movie Premieres</span>
+            <span class="feature">Tourist Attraction</span>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Japan Cinema -->
+      <div class="cinema-card">
+        <div class="cinema-image">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/2/2d/Toho_Cinemas_Shinjuku_Godzilla_Head_2015.jpg" alt="Toho Cinemas Shinjuku">
+        </div>
+        <div class="cinema-content">
+          <h3 class="cinema-name"><i class="fas fa-torii-gate"></i> Toho Cinemas</h3>
+          <p class="cinema-location"><i class="fas fa-map-marker-alt"></i> <span class="country-flag jp-flag"></span> Tokyo, Japan</p>
+          
+          <div class="cinema-fact">
+            <h4>Fun Fact</h4>
+            <p>Japan's largest cinema chain, famous for its Godzilla-themed cinema in Shinjuku with a massive Godzilla head on the building.</p>
+          </div>
+          
+          <p class="cinema-details">Toho Cinemas is Japan's premier movie theater chain, known for its high-quality screens and sound systems. The Shinjuku location is particularly famous for the giant Godzilla head that looms over the building, becoming an iconic Tokyo landmark and popular photo spot for tourists.</p>
+          
+          <div class="cinema-features">
+            <span class="feature">Godzilla Theme</span>
+            <span class="feature">Premium Screens</span>
+            <span class="feature">Largest Chain</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Map Section -->
+    <div class="map-section">
+      <h2 class="section-title">Cinema Locations</h2>
+      <div class="map-placeholder">
+        <i class="fas fa-map-marked-alt"></i>
+        <h3>Explore These Iconic Locations</h3>
+        <p>From the high-tech theaters of Seoul to the historic landmarks of Hollywood, these cinemas represent the best of movie-going experiences in the Philippines, Korea, America, and Japan. Each offers a unique glimpse into their country's cinema culture.</p>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="social-links">
+      <a href="#"><i class="fab fa-facebook-f"></i></a>
+      <a href="#"><i class="fab fa-twitter"></i></a>
+      <a href="#"><i class="fab fa-instagram"></i></a>
+      <a href="#"><i class="fab fa-youtube"></i></a>
+    </div>
+    <p>&copy; 2025 CineMagic. All Rights Reserved.</p>
+  </footer>
+</body>
+</html>

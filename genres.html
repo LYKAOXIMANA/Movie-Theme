@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CineMagic | Genres</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: "Segoe UI", Arial, sans-serif;
+      background: linear-gradient(to bottom, #0a0a2a 0%, #1a1a4b 100%);
+      color: #fff;
+      min-height: 100vh;
+      position: relative;
+    }
+
+    /* Film strip effect at bottom */
+    .film-strip {
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+      height: 40px;
+      background: #000;
+      background-image: 
+        repeating-linear-gradient(
+          to right,
+          #000,
+          #000 20px,
+          #333 20px,
+          #333 22px
+        );
+      z-index: -1;
+      display: flex;
+      justify-content: space-between;
+      padding: 0 10px;
+    }
+
+    .film-perf {
+      width: 15px;
+      height: 100%;
+      background: transparent;
+      border-left: 2px dotted #444;
+      border-right: 2px dotted #444;
+    }
+
+    /* Header */
+    header {
+      background: rgba(10, 10, 42, 0.9);
+      color: #d4af37; /* Gold color */
+      padding: 15px 30px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 2px solid #d4af37;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(10px);
+    }
+
+    header .logo {
+      font-size: 1.8rem;
+      font-weight: bold;
+      color: #d4af37;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-shadow: 0 0 10px rgba(212, 175, 55, 0.5);
+    }
+
+    header .logo i {
+      font-size: 2rem;
+    }
+
+    header nav ul {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      gap: 25px;
+    }
+
+    header nav ul li a {
+      text-decoration: none;
+      color: #f0e68c; /* Light gold */
+      font-size: 1.1rem;
+      transition: all 0.3s ease;
+      padding: 8px 15px;
+      border-radius: 20px;
+    }
+
+    header nav ul li a:hover,
+    header nav ul li a.active {
+      color: #0a0a2a;
+      background: #d4af37;
+      box-shadow: 0 0 15px rgba(212, 175, 55, 0.7);
+    }
+
+    /* Page Banner */
+    .page-banner {
+      position: relative;
+      background: url("https://images.unsplash.com/photo-1535016120720-40c646be5580?auto=format&fit=crop&w=1600&q=80") no-repeat center center/cover;
+      height: 40vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+    }
+
+    .page-banner::after {
+      content: "";
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: linear-gradient(to bottom, rgba(10, 10, 42, 0.7), rgba(26, 26, 75, 0.9));
+    }
+
+    .page-banner-content {
+      position: relative;
+      z-index: 2;
+      text-align: center;
+      max-width: 800px;
+      padding: 0 20px;
+    }
+
+    .page-banner h1 {
+      font-size: 3.5rem;
+      color: #d4af37;
+      margin-bottom: 20px;
+      text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+      font-weight: 700;
+    }
+
+    .page-banner p {
+      font-size: 1.3rem;
+      color: #f0e68c;
+    }
+
+    /* Genres Section */
+    .genres {
+      padding: 80px 20px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .section-title {
+      text-align: center;
+      font-size: 2.5rem;
+      margin-bottom: 50px;
+      color: #d4af37;
+      position: relative;
+    }
+
+    .section-title::after {
+      content: "";
+      position: absolute;
+      bottom: -15px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100px;
+      height: 3px;
+      background: #d4af37;
+      border-radius: 2px;
+    }
+
+    .genres-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 30px;
+    }
+
+    .genre-card {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 15px;
+      overflow: hidden;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      backdrop-filter: blur(5px);
+      border: 1px solid rgba(212, 175, 55, 0.3);
+    }
+
+    .genre-card:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+    }
+
+    .genre-card a {
+      text-decoration: none;
+      color: inherit;
+      display: block;
+      height: 100%;
+    }
+
+    .genre-image {
+      height: 200px;
+      overflow: hidden;
+    }
+
+    .genre-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.5s ease;
+    }
+
+    .genre-card:hover .genre-image img {
+      transform: scale(1.1);
+    }
+
+    .genre-content {
+      padding: 25px;
+    }
+
+    .genre-content h3 {
+      font-size: 1.8rem;
+      margin-bottom: 15px;
+      color: #d4af37;
+    }
+
+    .genre-content p {
+      color: #f0e68c;
+      line-height: 1.6;
+      margin-bottom: 20px;
+    }
+
+    .genre-stats {
+      display: flex;
+      justify-content: space-between;
+      border-top: 1px solid rgba(212, 175, 55, 0.3);
+      padding-top: 15px;
+      color: #d4af37;
+    }
+
+    .stat {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .stat .number {
+      font-size: 1.5rem;
+      font-weight: bold;
+    }
+
+    .stat .label {
+      font-size: 0.9rem;
+      color: #f0e68c;
+    }
+
+    /* Action genre specific */
+    .genre-action {
+      border-top: 4px solid #e74c3c;
+    }
+
+    .genre-action .genre-content h3 {
+      color: #e74c3c;
+    }
+
+    /* Comedy genre specific */
+    .genre-comedy {
+      border-top: 4px solid #f1c40f;
+    }
+
+    .genre-comedy .genre-content h3 {
+      color: #f1c40f;
+    }
+
+    /* Drama genre specific */
+    .genre-drama {
+      border-top: 4px solid #9b59b6;
+    }
+
+    .genre-drama .genre-content h3 {
+      color: #9b59b6;
+    }
+
+    /* Sci-Fi genre specific */
+    .genre-scifi {
+      border-top: 4px solid #3498db;
+    }
+
+    .genre-scifi .genre-content h3 {
+      color: #3498db;
+    }
+
+    /* Animation genre specific */
+    .genre-animation {
+      border-top: 4px solid #2ecc71;
+    }
+
+    .genre-animation .genre-content h3 {
+      color: #2ecc71;
+    }
+
+    /* Footer */
+    footer {
+      background: rgba(10, 10, 42, 0.9);
+      text-align: center;
+      padding: 30px;
+      font-size: 1rem;
+      border-top: 2px solid #d4af37;
+      color: #f0e68c;
+      backdrop-filter: blur(10px);
+      margin-top: 50px;
+    }
+
+    .social-links {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      margin: 20px 0;
+    }
+
+    .social-links a {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: #d4af37;
+      color: #0a0a2a;
+      text-decoration: none;
+      transition: all 0.3s ease;
+    }
+
+    .social-links a:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 5px 15px rgba(212, 175, 55, 0.5);
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      header {
+        flex-direction: column;
+        padding: 15px;
+      }
+      
+      header nav ul {
+        margin-top: 15px;
+        gap: 15px;
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+      
+      .page-banner h1 {
+        font-size: 2.5rem;
+      }
+      
+      .page-banner p {
+        font-size: 1.1rem;
+      }
+      
+      .genres-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Film strip -->
+  <div class="film-strip">
+    <div class="film-perf"></div>
+    <div class="film-perf"></div>
+    <div class="film-perf"></div>
+    <div class="film-perf"></div>
+    <div class="film-perf"></div>
+  </div>
+
+  <header>
+    <a href="homepage.html" class="logo"><i class="fas fa-film"></i> CineMagic</a>
+    <nav>
+      <ul>
+        <li><a href="homepage.html">Home</a></li>
+        <li><a href="genres.html" class="active">Genres</a></li>
+        <li><a href="news.html">News</a></li>
+        <li><a href="cinemas.html">Cinemas</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <section class="page-banner">
+    <div class="page-banner-content">
+      <h1>Explore Movie Genres</h1>
+      <p>Discover films that match your mood and preferences</p>
+    </div>
+  </section>
+
+  <section class="genres">
+    <h2 class="section-title">Our Genres</h2>
+    
+    <div class="genres-grid">
+      <!-- Action Genre -->
+      <div class="genre-card genre-action">
+        <a href="action.html">
+          <div class="genre-image">
+            <img src="picture/action-war-movie-concept-man-600nw-2274450385.jpg" alt="Action Movies">
+          </div>
+          <div class="genre-content">
+            <h3>Action</h3>
+            <p>Experience heart-pounding excitement with our collection of action-packed films featuring thrilling stunts, intense chase sequences, and epic battles.</p>
+            <div class="genre-stats">
+              <div class="stat">
+                <span class="number">10</span>
+                <span class="label">Titles</span>
+              </div>
+              <div class="stat">
+                <span class="number">4.5</span>
+                <span class="label">Avg Rating</span>
+              </div>
+              <div class="stat">
+                <span class="number">5</span>
+                <span class="label">New</span>
+              </div>
+            </div>
+          </div>
+        </a>
+      </div>
+      
+      <!-- Comedy Genre -->
+      <div class="genre-card genre-comedy">
+        <a href="comedy.html">
+          <div class="genre-image">
+            <img src="https://images.unsplash.com/photo-1489599102910-59206b8ca314?auto=format&fit=crop&w=600&q=80" alt="Comedy Movies">
+          </div>
+          <div class="genre-content">
+            <h3>Comedy</h3>
+            <p>Laugh out loud with our selection of hilarious comedies, from slapstick humor to witty satires that will brighten your day.</p>
+            <div class="genre-stats">
+              <div class="stat">
+                <span class="number">98</span>
+                <span class="label">Titles</span>
+              </div>
+              <div class="stat">
+                <span class="number">4.2</span>
+                <span class="label">Avg Rating</span>
+              </div>
+              <div class="stat">
+                <span class="number">8</span>
+                <span class="label">New</span>
+              </div>
+            </div>
+          </div>
+        </a>
+      </div>
+      
+      <!-- Drama Genre -->
+      <div class="genre-card genre-drama">
+        <a href="drama.html">
+          <div class="genre-image">
+            <img src="https://images.unsplash.com/photo-1478720568477-b840004f9ac6?auto=format&fit=crop&w=600&q=80" alt="Drama Movies">
+          </div>
+          <div class="genre-content">
+            <h3>Drama</h3>
+            <p>Immerse yourself in powerful storytelling with our dramatic films that explore the depth of human emotions and relationships.</p>
+            <div class="genre-stats">
+              <div class="stat">
+                <span class="number">156</span>
+                <span class="label">Titles</span>
+              </div>
+              <div class="stat">
+                <span class="number">4.7</span>
+                <span class="label">Avg Rating</span>
+              </div>
+              <div class="stat">
+                <span class="number">15</span>
+                <span class="label">New</span>
+              </div>
+            </div>
+          </div>
+        </a>
+      </div>
+      
+      <!-- Sci-Fi Genre -->
+      <div class="genre-card genre-scifi">
+        <a href="scifi.html">
+          <div class="genre-image">
+            <img src="picture/scificbackground.jpg" alt="Sci-Fi Movies">
+          </div>
+          <div class="genre-content">
+            <h3>Sci-Fi</h3>
+            <p>Journey to other worlds and futures with our science fiction collection featuring advanced technology, space exploration, and futuristic concepts.</p>
+            <div class="genre-stats">
+              <div class="stat">
+                <span class="number">10</span>
+                <span class="label">Titles</span>
+              </div>
+              <div class="stat">
+                <span class="number">4.6</span>
+                <span class="label">Avg Rating</span>
+              </div>
+              <div class="stat">
+                <span class="number">5</span>
+                <span class="label">New</span>
+              </div>
+            </div>
+          </div>
+        </a>
+      </div>
+      
+      <!-- Animation Genre -->
+      <div class="genre-card genre-animation">
+        <a href="animation.html">
+          <div class="genre-image">
+            <img src="picture/animationbg.jpg" alt="Animation Movies">
+          </div>
+          <div class="genre-content">
+            <h3>Animation</h3>
+            <p>Enjoy beautifully crafted animated features for all ages, from heartwarming stories to adventurous tales that spark imagination.</p>
+            <div class="genre-stats">
+              <div class="stat">
+                <span class="number">112</span>
+                <span class="label">Titles</span>
+              </div>
+              <div class="stat">
+                <span class="number">4.8</span>
+                <span class="label">Avg Rating</span>
+              </div>
+              <div class="stat">
+                <span class="number">11</span>
+                <span class="label">New</span>
+              </div>
+            </div>
+          </div>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="social-links">
+      <a href="#"><i class="fab fa-facebook-f"></i></a>
+      <a href="#"><i class="fab fa-twitter"></i></a>
+      <a href="#"><i class="fab fa-instagram"></i></a>
+      <a href="#"><i class="fab fa-youtube"></i></a>
+    </div>
+    <p>&copy; 2025 CineMagic. All Rights Reserved.</p>
+  </footer>
+</body>
+</html>
